@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파일 업로드</title>
+</head>
+<body>
+    <h1>PDF 파일 업로드</h1>
+    <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file-upload" style="cursor: pointer;">
+            파일 선택
+        </label>
+        <input type="file" id="file-upload" name="file" accept=".pdf" style="display: none;">
+        <button type="submit">업로드</button>
+    </form>
+
+    <div id="result" style="margin-top: 20px;"></div> <!-- 결과 표시 영역 -->
+</body>
+<script>
+    document.getElementById('file-upload').addEventListener('change', function() {
+        // 파일이 선택되었을 때의 동작
+    });
+    
+    document.querySelector('button[type="submit"]').addEventListener('click', function(event) {
+        const fileInput = document.getElementById('file-upload');
+        if (!fileInput.files.length) {
+            fileInput.click(); // 파일 선택 창 열기
+            event.preventDefault(); // 폼 제출 방지
+        }
+    });
+
+
+</script>
+
+
+</html>
