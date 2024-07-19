@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파일 업로드</title>
+</head>
+<body>
+    <h1>PDF 파일 업로드</h1>
+    <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file-upload" style="cursor: pointer;">
+            파일 선택
+        </label>
+        <input type="file" id="file-upload" name="file" accept=".pdf" style="display: none;">
+        <button type="submit">업로드</button>
+        <span id="file-name" style="margin-left: 10px; font-weight: bold;"></span> <!-- 파일 이름 표시 영역 -->
+    </form>
+
+    <div id="result" style="margin-top: 20px;"></div> <!-- 결과 표시 영역 -->
+</body>
+<script>
+    // 파일 선택 시 파일 이름 표시
+    document.getElementById('file-upload').addEventListener('change', function() {
+        const fileInput = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name; // 선택된 파일 이름
+            fileNameDisplay.textContent = fileName; // 파일 이름 표시
+        } else {
+            fileNameDisplay.textContent = ''; // 파일이 선택되지 않았을 경우
+        }
+    });
+
+    
+    document.querySelector('button[type="submit"]').addEventListener('click', function(event) {
+        const fileInput = document.getElementById('file-upload');
+        if (!fileInput.files.length) {
+            fileInput.click(); // 파일 선택 창 열기
+            event.preventDefault(); // 폼 제출 방지
+        }
+    });
+
+
+
+
+    $(document).ready(function() {
+        $('#upload-form').on('submit', function(event) {
+            event.preventDefault();  // 기본 제출 방지
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '{% url "upload_file" %}',  // 업로드 URL
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $('#result').html(response);  // HTML 응답을 직접 삽입
+                },
+                error: function(xhr, status, error) {
+                    $('#result').html("<h2>오류:</h2><p>서버와의 통신 중 오류가 발생했습니다.</p>");
+                }
+            });
+        });
+    });
+
+
+</script>
+
+
+</html>
