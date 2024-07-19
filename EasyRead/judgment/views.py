@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import FileSystemStorage
 import pdfplumber
 import os
@@ -21,11 +21,14 @@ def upload_file(request):
             # 파일 삭제 (필요시)
             os.remove(file_path)
 
-            return JsonResponse({'status': 'success', 'text': extracted_text})
-        else:
-            return JsonResponse({'status': 'error', 'message': '파일이 선택되지 않았습니다.'})
+            # HTML로 응답 생성
+            html_response = f"<h2>추출된 텍스트:</h2><pre>{extracted_text}</pre>"
+            return HttpResponse(html_response)
 
-    return JsonResponse({'status': 'error', 'message': '파일 업로드 실패'})
+        else:
+            return HttpResponse("<h2>오류:</h2><p>파일이 선택되지 않았습니다.</p>")
+
+    return HttpResponse("<h2>오류:</h2><p>파일 업로드 실패</p>")
 
 def extract_text_from_pdf(pdf_path):
     text = ""
