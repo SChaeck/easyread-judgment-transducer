@@ -1,5 +1,7 @@
 data/raw_data
 data/processing_data
+data/judgment.csv
+data/split_judgement.csv
 .env
 ./venv
 /venv
