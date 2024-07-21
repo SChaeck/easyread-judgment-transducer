@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>드래그 텍스트 색상 변경</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .highlight {
+            background-color: red; /* 드래그된 부분의 배경색 */
+            color: white; /* 드래그된 부분의 글자색 */
+        }
+    </style>
+</head>
+<body>
+    <h1>드래그하여 텍스트 색상 변경하기</h1>
+    <p id="text">
+        이 텍스트를 드래그하면 선택된 부분의 색상이 붉은색으로 변합니다. 다시 드래그하면 검정색으로 돌아갑니다. 드래그한 부분의 일부분만 해제할 수 있습니다.
+    </p>
+
+    <script>
+        const textElement = document.getElementById('text');
+
+        textElement.addEventListener('mouseup', function() {
+            const selection = window.getSelection(); // 현재 선택된 텍스트 가져오기
+
+            if (selection.toString()) { // 선택된 텍스트가 있을 경우
+                const range = selection.getRangeAt(0); // 선택된 영역의 Range 객체
+                const selectedText = selection.toString();
+                const parentElement = range.startContainer.parentNode; // 선택된 텍스트의 부모 요소
+
+                // 이미 하이라이트가 적용된 경우
+                if (parentElement.classList.contains('highlight')) {
+                    // 하이라이트 제거
+                    const span = document.createElement('span');
+                    span.textContent = selectedText; // 선택된 텍스트 복사
+                    range.deleteContents(); // 선택된 텍스트 삭제
+                    range.insertNode(span); // 새로운 스팬으로 대체
+                } else {
+                    // 새로운 하이라이트 추가
+                    const span = document.createElement('span'); // 새로운 스팬 요소 생성
+                    span.className = 'highlight'; // 클래스 추가
+                    range.surroundContents(span); // 선택 영역을 스팬으로 감싸기
+                }
+            }
+
+            selection.removeAllRanges(); // 선택 해제
+        });
+
+        // 드래그 해제 기능을 위한 이벤트 리스너
+        textElement.addEventListener('mousedown', function(event) {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            const startContainer = range.startContainer;
+            const endContainer = range.endContainer;
+
+            // 드래그된 텍스트를 해제할 수 있는지 확인
+            if (startContainer.nodeType === Node.TEXT_NODE && endContainer.nodeType === Node.TEXT_NODE) {
+                const parentStart = startContainer.parentNode;
+                const parentEnd = endContainer.parentNode;
+
+                // 하이라이트가 적용된 경우
+                if (parentStart.classList.contains('highlight') || parentEnd.classList.contains('highlight')) {
+                    // 하이라이트 제거
+                    const highlightedElements = textElement.querySelectorAll('.highlight');
+                    highlightedElements.forEach(element => {
+                        const textNode = document.createTextNode(element.textContent); // 기존 텍스트 노드 생성
+                        element.parentNode.replaceChild(textNode, element); // 하이라이트 제거
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
