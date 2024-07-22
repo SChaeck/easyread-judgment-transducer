@@ -1,8 +1,4 @@
-data/raw_data
-data/processing_data
-data/judgment.csv
-data/judgment_chunks.csv
-data/test.csv
+data/
 .env
 ./venv
 /venv
