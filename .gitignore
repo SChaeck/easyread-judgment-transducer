@@ -1,5 +1,4 @@
-data/raw_data
-data/processing_data
+data/
 .env
 ./venv
 /venv
