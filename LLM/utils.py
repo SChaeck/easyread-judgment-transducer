@@ -72,7 +72,7 @@ def preprocess_judgments(csv_file):
         time.sleep(0.012)  # 요청 간격을 줄여 RPM 5000을 유지합니다.
         return (i, result)
 
-    max_workers = 600  # 스레드 수를 대폭 늘립니다.
+    max_workers = 400  # 스레드 수를 대폭 늘립니다.
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(process_judgment, judgment, i, total): i for i, judgment in enumerate(df['text'])}
         
@@ -86,18 +86,19 @@ def preprocess_judgments(csv_file):
                 logger.error(f"에러 발생: {e} (index: {index + 1}/{total})")
             
             # 중간 결과 저장
-            #if index % 10 == 0:
-            #    partial_save_path = os.path.splitext(csv_file)[0] + '_partial.csv'
-            #    df.to_csv(partial_save_path, index=False)
-            #    logger.info(f"중간 결과 저장 완료: {partial_save_path}")
+            if index % 10 == 0:
+                partial_save_path = os.path.splitext(csv_file)[0] + '_partial.csv'
+                df.to_csv(partial_save_path, index=False)
+                logger.info(f"중간 결과 저장 완료: {partial_save_path}")
 
     return df
 
 ### 메인함수 ###
 if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_file = os.path.join(current_dir, 'good.csv')
-
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+    # csv_file = os.path.join(current_dir, '400002-1000004.csv')
+    csv_file = "data/400002-1000004.csv"
+    
     logger.info("메인 함수 시작")
     translated_df = preprocess_judgments(csv_file)
     translated_df.to_csv(csv_file, index=False)  # 원래 파일에 덮어쓰기
