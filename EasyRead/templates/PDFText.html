@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추출된 텍스트</title>
+    <style>
+        .body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .highlight {
+            background-color: red; /* 드래그된 글자의 배경색 */
+            color: white; /* 드래그된 글자의 글자색 */
+        }
+        .text {
+            display: inline; /* 텍스트를 inline으로 표시 */
+        }
+    </style>
+</head>
+<body>
+    <h2>추출된 텍스트:</h2>
+    <pre id="text">{{ extracted_text }}</pre>
+    <button id="sendButton">하이라이트된 텍스트 전송</button>
+
+    <script>
+        const textElement = document.getElementById('text');
+        const sendButton = document.getElementById('sendButton');
+
+        textElement.addEventListener('mouseup', function() {
+            const selection = window.getSelection(); // 현재 선택된 텍스트 가져오기
+
+            if (selection.toString()) { // 선택된 텍스트가 있을 경우
+                const range = selection.getRangeAt(0); // 선택된 영역의 Range 객체
+                const span = document.createElement('span'); // 새로운 스팬 요소 생성
+                span.className = 'highlight'; // 클래스 추가
+                range.surroundContents(span); // 선택 영역을 스팬으로 감싸기
+            }
+
+            selection.removeAllRanges(); // 선택 해제
+        });
+
+        // 드래그 해제 기능을 위한 이벤트 리스너
+        textElement.addEventListener('mousedown', function(event) {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const startContainer = range.startContainer;
+                const endContainer = range.endContainer;
+
+                if (startContainer.nodeType === Node.TEXT_NODE && endContainer.nodeType === Node.TEXT_NODE) {
+                    const parentStart = startContainer.parentNode;
+                    const parentEnd = endContainer.parentNode;
+
+                    // 하이라이트가 적용된 경우
+                    if (parentStart.classList.contains('highlight') || parentEnd.classList.contains('highlight')) {
+                        const highlightedElements = textElement.querySelectorAll('.highlight');
+                        highlightedElements.forEach(element => {
+                            const textNode = document.createTextNode(element.textContent); // 기존 텍스트 노드 생성
+                            element.parentNode.replaceChild(textNode, element); // 하이라이트 제거
+                        });
+                    }
+                }
+            }
+        });
+
+        // 버튼 클릭 시 하이라이트된 텍스트 전송
+        sendButton.addEventListener('click', function() {
+            const highlightedTexts = Array.from(textElement.querySelectorAll('.highlight'))
+                .map(element => element.textContent)
+                .join(', '); // 하이라이트된 텍스트를 모두 가져와서 쉼표로 구분
+
+            if (highlightedTexts.length > 0) {
+                fetch('/receive_highlighted_text/', { // 여기에 서버의 POST URL을 입력하세요.
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}', // CSRF 토큰 추가
+                    },
+                    body: JSON.stringify({ highlighted_texts: highlightedTexts }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('하이라이트된 텍스트가 전송되었습니다.');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('전송 중 오류가 발생했습니다.');
+                });
+            } else {
+                alert('하이라이트된 텍스트가 없습니다.');
+            }
+        });
+    </script>
+</body>
+</html>
