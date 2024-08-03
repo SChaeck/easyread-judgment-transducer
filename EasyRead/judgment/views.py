@@ -47,18 +47,30 @@ from langserve import RemoteRunnable
 
 
 
-@csrf_exempt  # CSRF 검증을 비활성화 (테스트 시에만 사용, 실제로는 사용하지 마세요)
+@csrf_exempt  
 def receive_highlighted_text(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        highlighted_texts = data.get('highlighted_texts', '')
-        
-        # ngrok remote 주소 설정
-        chain = RemoteRunnable("https://oriented-enormous-egret.ngrok-free.app/judgment/")
-        
-        # 방법 1: 모든 글자 한 번에 출력
-        response = chain.invoke({"judgment": highlighted_texts})
-        print(response)
+        try:
+            data = json.loads(request.body)
+            highlighted_texts = data.get('highlighted_texts', '')
+            # 여기서 highlighted_texts를 처리하는 로직 추가
 
+            # 하이라이트된 텍스트 출력
+            print("하이라이트된 텍스트:", highlighted_texts)
+
+            # ngrok remote 주소 설정
+            chain = RemoteRunnable("https://oriented-enormous-egret.ngrok-free.app/judgment/")
+            #끝에 invoke가 붙게 되는데 이거 어떻게 해결하는지 알아봐야할듯
+
+            judgment = highlighted_texts
+            
+            # 방법 1: 모든 글자 한 번에 출력
+            response = chain.invoke({"judgment": judgment, "legal_term": ""})
+            print(response)
+
+            # HTML 템플릿을 렌더링하여 응답
+            return render(request, 'template_name.html', {'highlighted_texts': highlighted_texts, 'response': response})
         
-        return JsonResponse({'status': 'success', 'highlighted_texts': highlighted_texts})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
