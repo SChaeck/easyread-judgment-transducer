@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import User, UserRating, UserComment
+from .models import User, UserRating, LowPoint
 
 admin.site.register(User)
 admin.site.register(UserRating)
-admin.site.register(UserComment)
+admin.site.register(LowPoint)
