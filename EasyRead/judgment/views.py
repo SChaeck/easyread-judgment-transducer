@@ -60,8 +60,7 @@ def receive_highlighted_text(request):
 
             # ngrok remote 주소 설정
             chain = RemoteRunnable("https://oriented-enormous-egret.ngrok-free.app/judgment/")
-            #끝에 invoke가 붙게 되는데 이거 어떻게 해결하는지 알아봐야할듯
-
+            
             judgment = highlighted_texts
             
             # 방법 1: 모든 글자 한 번에 출력

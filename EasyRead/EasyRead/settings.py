@@ -10,8 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from pathlib import Path
 import os
+import json
+
+
+keys_file_path = os.path.join('../KEY', 'keys.txt')
+with open(keys_file_path, 'r', encoding='utf-8') as file:
+    keys = json.load(file)
+
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,11 +90,14 @@ WSGI_APPLICATION = 'EasyRead.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'judgementDB',  # 생성할 데이터베이스 이름
+        'USER': 'root',        # MySQL 사용자 이름
+        'PASSWORD': keys['mysql_pw'],    # MySQL 비밀번호
+        'HOST': 'localhost',            # 데이터베이스 서버 주소
+        'PORT': '3306',                 # MySQL 기본 포트
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
