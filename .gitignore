@@ -9,3 +9,4 @@ EasyRead/Media
 *.pyc
 *.gguf
 bge-m3/bgem3_data.jsonl
+FlagEmbedding
