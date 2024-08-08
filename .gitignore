@@ -9,3 +9,5 @@ EasyRead/Media
 *.pyc
 *.gguf
 /KEY
+EasyRead/app.yaml
+/EasyRead/staticfiles

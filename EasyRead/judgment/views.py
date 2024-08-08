@@ -43,8 +43,8 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 
-from langserve import RemoteRunnable
 
+import requests
 
 
 @csrf_exempt  
@@ -58,14 +58,31 @@ def receive_highlighted_text(request):
             # 하이라이트된 텍스트 출력
             print("하이라이트된 텍스트:", highlighted_texts)
 
-            # ngrok remote 주소 설정
-            chain = RemoteRunnable("https://oriented-enormous-egret.ngrok-free.app/judgment/")
-            
+            # FastAPI 엔드포인트 URL
+            url = "https://oriented-enormous-egret.ngrok-free.app/judgment/chain"
+
             judgment = highlighted_texts
             
-            # 방법 1: 모든 글자 한 번에 출력
-            response = chain.invoke({"judgment": judgment, "legal_term": ""})
-            print(response)
+            # 전송할 JSON 데이터
+            data = {
+                "judgment": judgment
+            }
+            # POST 요청을 JSON 데이터와 함께 전송
+            response = requests.post(url, json=data)
+
+            # 요청이 성공했는지 확인
+            if response.status_code == 200:
+                # JSON 응답 출력
+                response_dict = response.json()
+                
+                # JSON 응답을 보기 좋게 포맷팅하여 출력
+                print("Response JSON:", json.dumps(response_dict, indent=4, ensure_ascii=False))
+            else:
+                
+                # 오류 응답 출력
+                print("Error:", response.status_code, response.text)
+                
+            
 
             # HTML 템플릿을 렌더링하여 응답
             return render(request, 'template_name.html', {'highlighted_texts': highlighted_texts, 'response': response})
