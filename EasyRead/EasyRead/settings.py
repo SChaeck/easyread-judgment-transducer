@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'judgment',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'EasyRead.urls'
@@ -91,10 +94,10 @@ WSGI_APPLICATION = 'EasyRead.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'judgementDB',  # 생성할 데이터베이스 이름
+        'NAME': 'judgement-database',  # 생성할 데이터베이스 이름
         'USER': 'root',        # MySQL 사용자 이름
         'PASSWORD': keys['mysql_pw'],    # MySQL 비밀번호
-        'HOST': 'localhost',            # 데이터베이스 서버 주소
+        'HOST': '34.64.63.68',            # 데이터베이스 서버 주소
         'PORT': '3306',                 # MySQL 기본 포트
     }
 }
@@ -157,3 +160,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
 # MEDIA_URL 설정
 MEDIA_URL = '/Media/'
 
+#모든 도메인에서의 요청을 허용하려면 CORS_ALLOW_ALL_ORIGINS 설정을 True
+CORS_ALLOW_ALL_ORIGINS = True

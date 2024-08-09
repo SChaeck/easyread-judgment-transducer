@@ -22,14 +22,16 @@ def pdf_to_plain(request):
             # PDF에서 텍스트 추출
             extracted_text = extract_text_from_pdf(file_path)
 
-            # 파일 삭제 (필요시)
             os.remove(file_path)
 
-            # URL을 역으로 찾아서 쿼리 매개변수를 추가
-            url = reverse('display_text')  # 여기서 'display_text' 이름을 확인
-            return redirect(f'{url}?extracted_text={extracted_text}')
+            # JSON 형식으로 응답 반환
+            return JsonResponse({'extracted_text': extracted_text})
 
-        return HttpResponse("<h2>오류:</h2><p>파일이 선택되지 않았습니다.</p>")
+        # 파일이 선택되지 않았을 때
+        return JsonResponse({'error': '파일이 선택되지 않았습니다.'}, status=400)
+
+    # POST가 아닐 경우
+    return JsonResponse({'error': '잘못된 요청입니다.'}, status=405)
 
 def display_text(request):
     extracted_text = request.GET.get('extracted_text', '')
@@ -53,7 +55,6 @@ def receive_highlighted_text(request):
         try:
             data = json.loads(request.body)
             highlighted_texts = data.get('highlighted_texts', '')
-            # 여기서 highlighted_texts를 처리하는 로직 추가
 
             # 하이라이트된 텍스트 출력
             print("하이라이트된 텍스트:", highlighted_texts)
@@ -77,16 +78,18 @@ def receive_highlighted_text(request):
                 
                 # JSON 응답을 보기 좋게 포맷팅하여 출력
                 print("Response JSON:", json.dumps(response_dict, indent=4, ensure_ascii=False))
+                return JsonResponse({'status': 'success', 'data': response_dict})
+
             else:
-                
                 # 오류 응답 출력
                 print("Error:", response.status_code, response.text)
-                
-            
+                return JsonResponse({'status': 'error', 'message': 'Failed to call external API', 'code': response.status_code}, status=response.status_code)
 
-            # HTML 템플릿을 렌더링하여 응답
-            return render(request, 'template_name.html', {'highlighted_texts': highlighted_texts, 'response': response})
-        
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+
+# 데이터 반환 형식을 json 으로 바꿔주세요. 
+# template to API 로 변환하기. 
