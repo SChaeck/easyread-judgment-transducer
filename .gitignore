@@ -8,6 +8,5 @@ EasyRead/Media
 *.DS_Store
 *.pyc
 *.gguf
-/KEY
-EasyRead/app.yaml
-/EasyRead/staticfiles
+bge-m3/bgem3_data.jsonl
+FlagEmbedding
