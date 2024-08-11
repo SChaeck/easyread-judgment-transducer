@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import User, UserRating, LowPoint
 
-# Register your models here.
+admin.site.register(User)
+admin.site.register(UserRating)
+admin.site.register(LowPoint)

@@ -8,3 +8,5 @@ EasyRead/Media
 *.DS_Store
 *.pyc
 *.gguf
+bge-m3/bgem3_data.jsonl
+FlagEmbedding
